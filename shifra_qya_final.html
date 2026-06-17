@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تطبيق لعبة الشفرة - نسخة المراحل والتحدي</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body::before {
+            content: "الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة الشفرة";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: 15px;
+            line-height: 130px;
+            color: rgba(255, 255, 255, 0.02);
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+            text-align: center;
+            transform: rotate(-15deg) scale(1.2);
+        }
+
+        #intro-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0b0f19;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: opacity 0.5s ease;
+        }
+
+        .qya-container {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f355ff, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+            animation: fadeInQYA 1s ease forwards;
+        }
+
+        @keyframes fadeInQYA {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .intro-word-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 40px;
+            z-index: 2;
+        }
+
+        .intro-letter {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: bold;
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
+            opacity: 0;
+            animation: bounceIn 0.8s cubic-bezier(0.36, 0, 0.66, -0.56) forwards;
+        }
+
+        .intro-letter:nth-child(1) { animation-delay: 0.3s; }
+        .intro-letter:nth-child(2) { animation-delay: 0.4s; }
+        .intro-letter:nth-child(3) { animation-delay: 0.5s; }
+        .intro-letter:nth-child(4) { animation-delay: 0.6s; }
+        .intro-letter:nth-child(5) { animation-delay: 0.7s; }
+        .intro-letter:nth-child(6) { animation-delay: 0.8s; }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: translateY(120px); }
+            60% { opacity: 1; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            color: #ffffff;
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 14px 60px;
+            border: none;
+            border-radius: 35px;
+            cursor: pointer;
+            z-index: 2;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+
+        .start-btn:hover {
+            box-shadow: 0 0 35px rgba(0, 242, 254, 0.7);
+        }
+
+        .start-btn:active {
+            transform: scale(0.95);
+        }
+
+        #game-interface {
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            max-width: 600px;
+            z-index: 1;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #00f2fe, #f355ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            margin-bottom: 5px;
+            text-shadow: 0 0 30px rgba(243, 85, 255, 0.2);
+        }
+
+        #message {
+            font-size: 1.1rem;
+            height: 32px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        #grid-container {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 10px;
+            border-radius: 16px;
+            display: grid;
+            grid-template-rows: repeat(6, 1fr);
+            gap: 6px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 5px;
+        }
+
+        .grid-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+        }
+
+        .grid-tile {
+            width: 45px;
+            height: 45px;
+            background-color: rgba(15, 23, 42, 0.8); 
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffffff;
+            transition: all 0.25s ease;
+        }
+
+        .grid-tile.correct { background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; border-color: #10b981; }
+        .grid-tile.present { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; border-color: #f59e0b; }
+        .grid-tile.absent { background-color: #1e293b !important; border-color: #334155; color: #64748b; }
+
+        .control-area {
+            width: 100%;
+            display: flex;
+            justify-content: center; 
+            margin-bottom: 10px;
+            height: 40px;
+        }
+
+        #play-again-btn {
+            background: linear-gradient(135deg, #f355ff 0%, #a855f7 100%);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(243, 85, 255, 0.3);
+            display: none;
+        }
+
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 10px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .key {
+            background-color: #334155;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+            max-width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+
+        .key.wide {
+            max-width: 65px;
+            background-color: #475569;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="intro-screen">
+        <div class="qya-container">QYA</div>
+        <div class="intro-word-container">
+            <div class="intro-letter">ا</div>
+            <div class="intro-letter">ل</div>
+            <div class="intro-letter">ش</div>
+            <div class="intro-letter">ف</div>
+            <div class="intro-letter">ر</div>
+            <div class="intro-letter">ة</div>
+        </div>
+        <button class="start-btn" onclick="startGame()">ابدأ التطبيق</button>
+    </div>
+
+    <div id="game-interface">
+        <div class="game-title">لعبة الشفرة</div>
+        <div id="message"></div>
+        <div id="grid-container"></div>
+        <div class="control-area">
+            <button id="play-again-btn" onclick="resetGame()"></button>
+        </div>
+        <div class="keyboard">
+            <div class="keyboard-row">
+                <button class="key" id="key-ج" onclick="pressKey('ج')">ج</button>
+                <button class="key" id="key-ح" onclick="pressKey('ح')">ح</button>
+                <button class="key" id="key-خ" onclick="pressKey('خ')">خ</button>
+                <button class="key" id="key-ه" onclick="pressKey('ه')">ه</button>
+                <button class="key" id="key-ع" onclick="pressKey('ع')">ع</button>
+                <button class="key" id="key-غ" onclick="pressKey('غ')">غ</button>
+                <button class="key" id="key-ف" onclick="pressKey('ف')">ف</button>
+                <button class="key" id="key-ق" onclick="pressKey('ق')">ق</button>
+                <button class="key" id="key-ث" onclick="pressKey('ث')">ث</button>
+                <button class="key" id="key-ص" onclick="pressKey('ص')">ص</button>
+                <button class="key" id="key-ض" onclick="pressKey('ض')">ض</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="key" id="key-ة" onclick="pressKey('ة')">ة</button>
+                <button class="key" id="key-ك" onclick="pressKey('ك')">ك</button>
+                <button class="key" id="key-م" onclick="pressKey('م')">م</button>
+                <button class="key" id="key-ن" onclick="pressKey('ن')">ن</button>
+                <button class="key" id="key-ت" onclick="pressKey('ت')">ت</button>
+                <button class="key" id="key-ا" onclick="pressKey('ا')">ا</button>
+                <button class="key" id="key-ل" onclick="pressKey('ل')">ل</button>
+                <button class="key" id="key-ب" onclick="pressKey('ب')">ب</button>
+                <button class="key" id="key-ي" onclick="pressKey('ي')">ي</button>
+                <button class="key" id="key-س" onclick="pressKey('س')">س</button>
+                <button class="key" id="key-ش" onclick="pressKey('ش')">ش</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="key wide" onclick="pressKey('حذف')">حذف</button>
+                <button class="key" id="key-ظ" onclick="pressKey('ظ')">ظ</button>
+                <button class="key" id="key-ط" onclick="pressKey('ط')">ط</button>
+                <button class="key" id="key-ذ" onclick="pressKey('ذ')">ذ</button>
+                <button class="key" id="key-د" onclick="pressKey('د')">د</button>
+                <button class="key" id="key-ز" onclick="pressKey('ز')">ز</button>
+                <button class="key" id="key-ر" onclick="pressKey('ر')">ر</button>
+                <button class="key" id="key-و" onclick="pressKey('و')">و</button>
+                <button class="key" id="key-ى" onclick="pressKey('ى')">ى</button>
+                <button class="key" id="key-ء" onclick="pressKey('ء')">ء</button>
+                <button class="key wide" onclick="pressKey('إدخال')">إدخال</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const words = [
+            "حاسوب", "جوالي", "مفتاح", "سفينه", "طياره", "سياره", "صندوق", "قنديل", "مسواك", "خزانه",
+            "امطار", "انهار", "اشجار", "حدائق", "ملاعب", "رمال", "صحراء", "كواكب", "طبيعه", "زجاجه",
+            "بحرين", "امارات", "كويتي", "عماني", "لبنان", "سودان", "تونسى", "مغربي", "رمضان", "شعبان",
+            "دجاجه", "زرافه", "ذبابه", "صرصور", "تمساح", "عصفور", "جميل", "كريم", "صبور", "طويل",
+            "قصير", "صغير", "كبير", "سريع", "مكتبه", "مدرسه", "ملعقه", "سكينه", "تلفاز", "مذياع",
+            "كامرا", "شاحني", "سماعه", "محفظه", "حقيبه", "فستان", "سروال", "عمامه", "جلباب", "معطفي",
+            "نظاره", "الماس", "ياقوت", "مرجان", "حديد", "اسمنت", "طابوق", "كرتون", "منشار", "كماشه",
+            "الوان", "دفاتر", "اقلام", "مسطره", "ممحاه", "برايه", "حقائب", "جامعه", "كليات", "معاهد",
+            "استاذ", "تلميذ", "مهندس", "صيدلي", "محامي", "جمهور", "بطوله", "جائزه", "سينما", "مسلسل",
+            "برنامج", "اذاعه", "صحيفة", "مقالك", "اخبار", "تقرير", "تاريخ", "دقيقه", "ثانيه", "لحظه"
+        ];
+
+        let secretWord = words[Math.floor(Math.random() * words.length)];
+        let currentRow = 0, currentCol = 0, gameActive = true;
+        let guesses = ["", "", "", "", "", ""];
+        let deleteCount = 0;
+
+        function buildGrid() {
+            const container = document.getElementById("grid-container");
+            container.innerHTML = "";
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement("div");
+                row.className = "grid-row";
+                for (let j = 0; j < 5; j++) {
+                    const tile = document.createElement("div");
+                    tile.className = "grid-tile";
+                    tile.id = `tile-${i}-${j}`;
+                    row.appendChild(tile);
+                }
+                container.appendChild(row);
+            }
+        }
+        buildGrid();
+
+        function startGame() {
+            document.getElementById("intro-screen").style.opacity = "0";
+            setTimeout(() => {
+                document.getElementById("intro-screen").style.display = "none";
+                document.getElementById("game-interface").style.display = "flex";
+            }, 500);
+        }
+
+        function pressKey(key) {
+            if (!gameActive) return;
+            const msg = document.getElementById("message");
+            msg.textContent = "";
+
+            if (key === 'حذف') {
+                deleteCount++;
+                if (deleteCount === 3) {
+                    msg.style.color = "#ffff00";
+                    msg.textContent = "الكلمة السرية هي: " + secretWord;
+                    deleteCount = 0;
+                }
+                if (currentCol > 0) {
+                    currentCol--;
+                    guesses[currentRow] = guesses[currentRow].slice(0, -1);
+                    document.getElementById(`tile-${currentRow}-${currentCol}`).textContent = "";
+                }
+            } else if (key === 'إدخال') {
+                deleteCount = 0;
+                if (guesses[currentRow].length === 5) checkRow();
+                else {
+                    msg.style.color = "#ff4a4a";
+                    msg.textContent = "يجب إكمال الحروف الخمسة أولاً!";
+                }
+            } else {
+                deleteCount = 0;
+                if (currentCol < 5) {
+                    document.getElementById(`tile-${currentRow}-${currentCol}`).textContent = key;
+                    guesses[currentRow] += key;
+                    currentCol++;
+                }
+            }
+        }
+
+        function checkRow() {
+            const guess = guesses[currentRow];
+            const msg = document.getElementById("message");
+
+            for (let i = 0; i < 5; i++) {
+                const tile = document.getElementById(`tile-${currentRow}-${i}`);
+                const letter = guess[i];
+                const keyBtn = document.getElementById(`key-${letter}`);
+
+                if (secretWord[i] === letter) {
+                    tile.classList.add("correct");
+                    if(keyBtn) { keyBtn.className = "key correct"; }
+                } else if (secretWord.includes(letter)) {
+                    tile.classList.add("present");
+                    if(keyBtn && !keyBtn.classList.contains("correct")) { keyBtn.className = "key present"; }
+                } else {
+                    tile.classList.add("absent");
+                    if(keyBtn && !keyBtn.classList.contains("correct") && !keyBtn.classList.contains("present")) { keyBtn.className = "key absent"; }
+                }
+            }
+
+            if (guess === secretWord) {
+                msg.style.color = "#00ffaa";
+                msg.textContent = "🎉 مبروك! لقد فككت الشفرة بنجاح!";
+                endGame(true);
+            } else {
+                currentRow++;
+                currentCol = 0;
+                if (currentRow === 6) {
+                    msg.style.color = "#ff4a4a";
+                    msg.textContent = `انتهت المحاولات! الكلمة هي: (${secretWord})`;
+                    endGame(false);
+                }
+            }
+        }
+
+        function endGame(isWin) {
+            gameActive = false;
+            const actionBtn = document.getElementById("play-again-btn");
+            if (isWin) {
+                actionBtn.textContent = "المرحلة التالية ↻";
+            } else {
+                actionBtn.textContent = "إعادة المحاولة ↻";
+            }
+            actionBtn.style.display = "block";
+        }
+
+        function resetGame() {
+            secretWord = words[Math.floor(Math.random() * words.length)];
+            currentRow = 0; currentCol = 0; gameActive = true; deleteCount = 0;
+            guesses = ["", "", "", "", "", ""];
+            document.getElementById("message").textContent = "";
+            document.getElementById("play-again-btn").style.display = "none";
+            buildGrid();
+
+            const keys = document.querySelectorAll(".key");
+            keys.forEach(k => {
+                if(!k.classList.contains("wide")) {
+                    k.className = "key";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
